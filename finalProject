@@ -1,0 +1,100 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class GameManager : MonoBehaviour
+{
+    //List
+    public List<GameObject> villagers = new List<GameObject>();
+    public List<GameObject> coins = new List<GameObject>();
+    //people
+    public GameObject villager;
+    public int peopleNum;
+    Vector2 pos;
+
+    //itemBag
+    public GameObject items;
+    bool moneyBagUse = false;
+    public Button MoneyBagIcon;
+
+    //coins
+    public GameObject coin;
+    public Sprite coinOn;
+    public Sprite coinOff;
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        generator_villager();
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        if (Input.GetMouseButtonDown(1))
+        {
+            moneyBagUse = false;
+            MoneyBagIcon.image.overrideSprite = coinOff;
+        }
+        if (moneyBagUse)
+        {
+            if (Input.GetMouseButtonDown(0))
+            {
+                var mousePos = Input.mousePosition;
+                mousePos.z = 2.0f;
+                var objectPos = Camera.main.ScreenToWorldPoint(mousePos);
+                Instantiate(coin, objectPos, Quaternion.identity);
+                coins.Add(coin);
+            }
+        }
+        foreach (var allcoin in coins)
+        {
+            foreach (var allpeople in villagers)
+            {
+                float coinDist = Vector2.Distance(allpeople.transform.position, allcoin.transform.position);
+                if (coinDist < 2)
+                {
+                    Debug.DrawLine(allpeople.transform.position, allcoin.transform.position, Color.green);
+                }
+                else
+                {
+                    Debug.DrawLine(allpeople.transform.position, allcoin.transform.position, Color.red);
+                }
+            }
+        }
+    }
+
+    void generator_villager()
+    {
+        for (int x = 0; x < peopleNum; x++)
+        {
+            pos = new Vector2(0f, -5f);
+            Instantiate(villager, pos, Quaternion.identity);
+            villagers.Add(villager);
+        }
+    }
+
+    public void OpenItems()
+    {
+
+        if (items.activeSelf)
+        {
+            items.SetActive(false);
+        }
+        else
+        {
+            items.SetActive(true);
+        }
+    }
+
+    public void DropCoins()
+    {
+        moneyBagUse = true;
+        MoneyBagIcon.image.overrideSprite = coinOn;
+        items.SetActive(false);
+    }
+
+
+
+}
